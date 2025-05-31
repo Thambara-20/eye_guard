@@ -85,6 +85,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  // Helper method to build recommendation rows
+  Widget _buildRecommendationRow(String activity, String luxRange) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            activity,
+            style: const TextStyle(fontSize: 12),
+          ),
+          Text(
+            luxRange,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,59 +135,133 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Light Level Settings',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+        Row(
+          children: [
+            Icon(Icons.light_mode,
+                size: 18, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            const Text(
+              'Light Level Settings',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Card(
+          elevation: 2,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Optimal Light Threshold'),
-                const SizedBox(height: 4),
-                Text(
-                  '${_luxThreshold.toInt()} lux',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Optimal Light Threshold',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${_luxThreshold.toInt()} lux',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Slider(
-                  value: _luxThreshold,
-                  min: 100,
-                  max: 1000,
-                  divisions: 18,
-                  label: '${_luxThreshold.toInt()} lux',
-                  onChanged: (value) {
-                    setState(() {
-                      _luxThreshold = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Adjust this threshold based on your comfort. For normal reading and writing, 300-500 lux is recommended.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Icon(Icons.brightness_low,
+                        size: 16, color: Colors.grey),
+                    Expanded(
+                      child: Slider(
+                        value: _luxThreshold,
+                        min: 100,
+                        max: 1000,
+                        divisions: 18,
+                        label: '${_luxThreshold.toInt()} lux',
+                        onChanged: (value) {
+                          setState(() {
+                            _luxThreshold = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const Icon(Icons.brightness_high,
+                        size: 16, color: Colors.grey),
+                  ],
                 ),
                 const SizedBox(height: 16),
+
+                // Recommended light levels card
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.lightbulb_outline,
+                              size: 14, color: Colors.amber),
+                          SizedBox(width: 6),
+                          Text(
+                            'Recommended Light Levels',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _buildRecommendationRow(
+                          'Reading & Writing', '300-500 lux'),
+                      _buildRecommendationRow('Detailed Work', '500-1000 lux'),
+                      _buildRecommendationRow(
+                          'Casual & Relaxation', '200-300 lux'),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
                     onPressed: _isSaving ? null : _saveSettings,
-                    child: _isSaving
+                    icon: _isSaving
                         ? const SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Save Settings'),
+                        : const Icon(Icons.save),
+                    label: Text(_isSaving ? 'Saving...' : 'Save Settings'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
               ],

@@ -219,7 +219,7 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
-  // Simplified chart replacement
+  // Enhanced chart implementation
   Widget _buildSimpleChart() {
     if (_recentReadings.isEmpty) {
       return const Expanded(
@@ -232,62 +232,189 @@ class _StatsScreenState extends State<StatsScreen> {
     // Calculate min and max for the chart
     double minLux = double.infinity;
     double maxLux = 0;
+    int goodLightCount = 0;
+    int badLightCount = 0;
+    final threshold = _stats['averageLux'] *
+        0.7; // Use 70% of average as threshold for simplicity
 
     for (var reading in _recentReadings) {
       if (reading.luxValue < minLux) minLux = reading.luxValue;
       if (reading.luxValue > maxLux) maxLux = reading.luxValue;
+      if (reading.luxValue >= threshold) {
+        goodLightCount++;
+      } else {
+        badLightCount++;
+      }
     }
 
     minLux = minLux == double.infinity ? 0 : minLux;
 
+    // Calculate good light percentage for the pie chart
+    final goodLightPercentage = _recentReadings.isEmpty
+        ? 0
+        : (goodLightCount / _recentReadings.length * 100).toInt();
+
     return Expanded(
       child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Light Readings Over Time',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Light Exposure Summary',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${_recentReadings.length} readings',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
+              const Divider(),
               if (_recentReadings.length >= 2) ...[
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                          'Latest: ${_recentReadings.last.luxValue.toStringAsFixed(1)} lux'),
-                      const SizedBox(height: 8),
+                      // Time period indicators
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Colors.red,
-                                    Colors.yellow,
-                                    Colors.green
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
+                          Text(
+                            _recentReadings.first.timestamp
+                                .toString()
+                                .substring(0, 16),
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey[600]),
+                          ),
+                          Text(
+                            _recentReadings.last.timestamp
+                                .toString()
+                                .substring(0, 16),
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey[600]),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                          'Min: ${minLux.toStringAsFixed(1)} lux  |  Max: ${maxLux.toStringAsFixed(1)} lux'),
                       const SizedBox(height: 16),
-                      Text('${_recentReadings.length} readings recorded'),
-                      Text(
-                          'First: ${_recentReadings.first.timestamp.toString().substring(0, 16)}'),
-                      Text(
-                          'Last: ${_recentReadings.last.timestamp.toString().substring(0, 16)}'),
+
+                      // Visualization section
+                      Expanded(
+                        child: Row(
+                          children: [
+                            // Left side - Pie chart
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 120,
+                                        height: 120,
+                                        child: CircularProgressIndicator(
+                                          value: goodLightPercentage / 100,
+                                          strokeWidth: 10,
+                                          backgroundColor:
+                                              Colors.red.withOpacity(0.2),
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                  Color>(Colors.green),
+                                        ),
+                                      ),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            '$goodLightPercentage%',
+                                            style: const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const Text(
+                                            'Good Light',
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      _buildLegendItem('Good', Colors.green),
+                                      const SizedBox(width: 16),
+                                      _buildLegendItem('Poor', Colors.red),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Right side - Stats and recommendations
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildStatRow('Latest',
+                                      '${_recentReadings.last.luxValue.toStringAsFixed(0)} lux'),
+                                  const SizedBox(height: 8),
+                                  _buildStatRow('Average',
+                                      '${_stats['averageLux'].toStringAsFixed(0)} lux'),
+                                  const SizedBox(height: 8),
+                                  _buildStatRow('Range',
+                                      '${minLux.toStringAsFixed(0)}-${maxLux.toStringAsFixed(0)} lux'),
+                                  const SizedBox(height: 16),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: goodLightPercentage >= 70
+                                          ? Colors.green.withOpacity(0.1)
+                                          : Colors.orange.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      goodLightPercentage >= 70
+                                          ? 'Great job maintaining good lighting!'
+                                          : 'Try to improve your lighting conditions',
+                                      style: TextStyle(
+                                        color: goodLightPercentage >= 70
+                                            ? Colors.green
+                                            : Colors.orange,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -302,6 +429,39 @@ class _StatsScreenState extends State<StatsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+
+  Widget _buildStatRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        ),
+      ],
     );
   }
 }
