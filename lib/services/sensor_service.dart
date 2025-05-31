@@ -1,97 +1,138 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import '../models/light_reading.dart';
+import '../models/proximity_reading.dart';
 
 class SensorService {
-  static const MethodChannel _channel =
+  static const MethodChannel _lightChannel =
       MethodChannel('com.eyeguard.eye_guard/sensor');
+  static const MethodChannel _proximityChannel =
+      MethodChannel('com.eyeguard.eye_guard/proximity');
 
-  // Private constructor for singleton pattern
   SensorService._();
   static final SensorService _instance = SensorService._();
-
-  // Singleton instance
   factory SensorService() => _instance;
 
-  // Stream controller to broadcast light sensor readings
   final _lightReadingController = StreamController<LightReading>.broadcast();
   Stream<LightReading> get lightReadingStream => _lightReadingController.stream;
 
-  Timer? _pollingTimer;
+  final _proximityReadingController =
+      StreamController<ProximityReading>.broadcast();
+  Stream<ProximityReading> get proximityReadingStream =>
+      _proximityReadingController.stream;
+
+  Timer? _lightPollingTimer;
+  Timer? _proximityPollingTimer;
   bool _isRunning = false;
-  // Start the background sensor service
+
+  /// Initializes and starts both light and proximity sensor services.
+  /// Returns [true] if both services start successfully, [false] otherwise.
+  /// Handles [PlatformException] errors (e.g., no sensor available) by adding errors to the streams.
   Future<bool> startService() async {
     try {
-      final bool result =
-          await _channel.invokeMethod('startLightSensorService');
-      if (result) {
+      final lightResult =
+          await _lightChannel.invokeMethod('startLightSensorService');
+      final proximityResult =
+          await _proximityChannel.invokeMethod('startProximitySensorService');
+      if (lightResult == true && proximityResult == true) {
         _isRunning = true;
         _startPolling();
       }
-      return result;
+      return _isRunning;
     } catch (e) {
       print('Error starting service: $e');
-      // Check if the error is due to missing sensor
       if (e is PlatformException && e.code == 'NO_SENSOR') {
-        _lightReadingController
-            .addError('Light sensor not available on this device');
+        _lightReadingController.addError('Sensors not available');
+        _proximityReadingController.addError('Sensors not available');
       }
       return false;
     }
   }
 
-  // Stop the background sensor service
+  /// Stops both light and proximity sensor services.
+  /// Returns [true] if both services stop successfully, [false] otherwise.
+  /// Cleans up polling timers before stopping the services.
   Future<bool> stopService() async {
     try {
       _stopPolling();
-      final bool result = await _channel.invokeMethod('stopLightSensorService');
+      final lightResult =
+          await _lightChannel.invokeMethod('stopLightSensorService');
+      final proximityResult =
+          await _proximityChannel.invokeMethod('stopProximitySensorService');
       _isRunning = false;
-      return result;
+      return lightResult == true && proximityResult == true;
     } catch (e) {
       print('Error stopping service: $e');
       return false;
     }
   }
 
-  // Get the current light value
+  /// Retrieves the current light value from the light sensor service.
+  /// Returns the lux value as a [double], or 0.0 if an error occurs.
   Future<double> getCurrentLightValue() async {
     try {
-      final double value = await _channel.invokeMethod('getCurrentLightValue');
-      return value;
+      return await _lightChannel.invokeMethod('getCurrentLightValue');
     } catch (e) {
       print('Error getting light value: $e');
       return 0.0;
     }
   }
 
-  // Poll the light sensor service periodically
+  /// Retrieves the current proximity value from the proximity sensor service.
+  /// Returns the distance in centimeters as a [double], or [double.infinity] if an error occurs.
+  Future<double> getCurrentProximityValue() async {
+    try {
+      return await _proximityChannel.invokeMethod('getCurrentDistance');
+    } catch (e) {
+      print('Error getting proximity value: $e');
+      return double.infinity; // Indicate no valid reading
+    }
+  }
+
+  /// Starts periodic polling for both light and proximity sensor data.
+  /// Uses a 1-second interval to fetch and broadcast readings via their respective streams.
+  /// Only polls if the service is running.
   void _startPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+    _lightPollingTimer?.cancel();
+    _lightPollingTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       if (_isRunning) {
         final lightValue = await getCurrentLightValue();
         _lightReadingController.add(
-          LightReading(
-            luxValue: lightValue,
-            timestamp: DateTime.now(),
-          ),
+          LightReading(luxValue: lightValue, timestamp: DateTime.now()),
+        );
+      }
+    });
+
+    _proximityPollingTimer?.cancel();
+    _proximityPollingTimer =
+        Timer.periodic(const Duration(seconds: 1), (_) async {
+      if (_isRunning) {
+        final proximityValue = await getCurrentProximityValue();
+        _proximityReadingController.add(
+          ProximityReading(distance: proximityValue, timestamp: DateTime.now()),
         );
       }
     });
   }
 
-  // Stop polling the light sensor service
+  /// Stops periodic polling for both light and proximity sensor data.
+  /// Cancels and nullifies the polling timers.
   void _stopPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = null;
+    _lightPollingTimer?.cancel();
+    _proximityPollingTimer?.cancel();
+    _lightPollingTimer = null;
+    _proximityPollingTimer = null;
   }
 
-  // Dispose resources
+  /// Disposes of the sensor service resources.
+  /// Stops polling and closes the light and proximity stream controllers.
   void dispose() {
     _stopPolling();
     _lightReadingController.close();
+    _proximityReadingController.close();
   }
 
-  // Check if service is running
+  /// Checks if the sensor service is currently running.
+  /// Returns [true] if running, [false] otherwise.
   bool get isRunning => _isRunning;
 }
