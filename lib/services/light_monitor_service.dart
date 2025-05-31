@@ -1,5 +1,6 @@
 import 'dart:async';
 import '../models/light_reading.dart';
+import '../models/proximity_reading.dart';
 import 'sensor_service.dart';
 import 'storage_service.dart';
 import 'notification_service.dart';
@@ -9,17 +10,17 @@ class LightMonitorService {
   final StorageService _storageService;
   final NotificationService _notificationService;
 
-  // Tracks how long the user has been in poor lighting
   DateTime? _poorLightingStartTime;
-  bool _notificationShown = false;
+  DateTime? _closeProximityStartTime;
+  bool _lightingNotificationShown = false;
+  bool _proximityNotificationShown = false;
 
-  // Duration thresholds for warnings
   static const Duration _warningThreshold = Duration(minutes: 5);
+  static const double _safeDistanceThreshold = 30.0; // cm
 
-  // Stream subscription for light readings
   StreamSubscription<LightReading>? _lightReadingSubscription;
+  StreamSubscription<ProximityReading>? _proximityReadingSubscription;
 
-  // Private constructor
   LightMonitorService._({
     required SensorService sensorService,
     required StorageService storageService,
@@ -28,10 +29,10 @@ class LightMonitorService {
         _storageService = storageService,
         _notificationService = notificationService;
 
-  // Singleton instance
   static LightMonitorService? _instance;
 
-  // Factory constructor
+  /// Factory constructor to create or return a singleton instance of LightMonitorService.
+  /// [sensorService], [storageService], and [notificationService] are required dependencies.
   factory LightMonitorService({
     required SensorService sensorService,
     required StorageService storageService,
@@ -45,45 +46,40 @@ class LightMonitorService {
     return _instance!;
   }
 
-  // Start monitoring light levels
+  /// Starts monitoring light and proximity sensor data.
+  /// Returns [true] if the sensor service starts successfully, [false] otherwise.
   Future<bool> startMonitoring() async {
-    final bool success = await _sensorService.startService();
-
+    final success = await _sensorService.startService();
     if (success) {
       _lightReadingSubscription =
           _sensorService.lightReadingStream.listen(_processLightReading);
+      _proximityReadingSubscription = _sensorService.proximityReadingStream
+          .listen(_processProximityReading);
     }
-
     return success;
   }
 
-  // Stop monitoring light levels
+  /// Stops monitoring light and proximity sensor data.
+  /// Returns [true] if the sensor service stops successfully, [false] otherwise.
   Future<bool> stopMonitoring() async {
     _lightReadingSubscription?.cancel();
+    _proximityReadingSubscription?.cancel();
     _lightReadingSubscription = null;
-
+    _proximityReadingSubscription = null;
     return await _sensorService.stopService();
   }
 
-  // Process a light reading
+  /// Processes incoming light reading data from the sensor stream.
+  /// Saves the reading to storage and triggers a notification if lighting is poor for 5 minutes.
   void _processLightReading(LightReading reading) async {
-    // Save the reading to storage (could be optimized to save less frequently)
     await _storageService.saveLightReading(reading);
-
-    // Get user's threshold setting
     final threshold = await _storageService.getLuxThreshold();
-
-    // Check if lighting is poor
     if (reading.luxValue < threshold) {
-      // If this is the start of poor lighting, record the time
       _poorLightingStartTime ??= DateTime.now();
-
-      // Check if user has been in poor lighting for too long
       final poorLightingDuration =
           DateTime.now().difference(_poorLightingStartTime!);
-
-      // Show notification if threshold exceeded and no notification shown yet
-      if (poorLightingDuration > _warningThreshold && !_notificationShown) {
+      if (poorLightingDuration > _warningThreshold &&
+          !_lightingNotificationShown) {
         await _notificationService.showPoorLightingNotification(
           id: 1,
           title: 'Poor Lighting Detected',
@@ -91,24 +87,50 @@ class LightMonitorService {
               'You have been in poor lighting for ${poorLightingDuration.inMinutes} minutes. '
               'Consider improving your lighting conditions.',
         );
-        _notificationShown = true;
+        _lightingNotificationShown = true;
       }
     } else {
-      // Reset poor lighting tracking if lighting is good
-      if (_poorLightingStartTime != null) {
-        _poorLightingStartTime = null;
-        if (_notificationShown) {
-          await _notificationService.cancelNotification(1);
-          _notificationShown = false;
-        }
+      _poorLightingStartTime = null;
+      if (_lightingNotificationShown) {
+        await _notificationService.cancelNotification(1);
+        _lightingNotificationShown = false;
       }
     }
   }
 
-  // Get user's light exposure stats
+  /// Processes incoming proximity reading data from the sensor stream.
+  /// Saves the reading to storage and triggers a notification if the device is too close for 5 minutes.
+  void _processProximityReading(ProximityReading reading) async {
+    await _storageService.saveLightReading(LightReading(
+        luxValue: 0, timestamp: reading.timestamp)); // Placeholder storage
+    if (reading.distance < _safeDistanceThreshold) {
+      _closeProximityStartTime ??= DateTime.now();
+      final proximityDuration =
+          DateTime.now().difference(_closeProximityStartTime!);
+      if (proximityDuration > _warningThreshold &&
+          !_proximityNotificationShown) {
+        await _notificationService.showPoorLightingNotification(
+          id: 2,
+          title: 'Too Close to Screen',
+          body:
+              'You have been too close (<30cm) for ${proximityDuration.inMinutes} minutes. '
+              'Move back to reduce eye strain.',
+        );
+        _proximityNotificationShown = true;
+      }
+    } else {
+      _closeProximityStartTime = null;
+      if (_proximityNotificationShown) {
+        await _notificationService.cancelNotification(2);
+        _proximityNotificationShown = false;
+      }
+    }
+  }
+
+  /// Retrieves light exposure statistics from stored readings.
+  /// Returns a [Map] containing average lux, time below/above threshold, min/max lux.
   Future<Map<String, dynamic>> getLightStats() async {
     final readings = await _storageService.getLightReadings();
-
     if (readings.isEmpty) {
       return {
         'averageLux': 0.0,
@@ -118,30 +140,21 @@ class LightMonitorService {
         'maxLux': 0.0,
       };
     }
-
     final threshold = await _storageService.getLuxThreshold();
-
-    // Calculate stats
     double totalLux = 0;
     double minLux = double.infinity;
     double maxLux = 0;
     int belowThresholdCount = 0;
-
     for (final reading in readings) {
       totalLux += reading.luxValue;
       minLux = minLux > reading.luxValue ? reading.luxValue : minLux;
       maxLux = maxLux < reading.luxValue ? reading.luxValue : maxLux;
-
-      if (reading.luxValue < threshold) {
-        belowThresholdCount++;
-      }
+      if (reading.luxValue < threshold) belowThresholdCount++;
     }
-
     final averageLux = totalLux / readings.length;
     final belowThresholdPercentage =
-        readings.isEmpty ? 0 : (belowThresholdCount / readings.length) * 100;
+        (belowThresholdCount / readings.length) * 100;
     final aboveThresholdPercentage = 100 - belowThresholdPercentage;
-
     return {
       'averageLux': averageLux,
       'timeBelowThreshold': belowThresholdPercentage,
@@ -151,11 +164,19 @@ class LightMonitorService {
     };
   }
 
-  // Check if monitoring is active
+  /// Checks if the monitoring service is currently active.
+  /// Returns [true] if running, [false] otherwise.
   bool get isMonitoring => _sensorService.isRunning;
 
-  // Provide access to current light value
+  /// Retrieves the current light value from the sensor service.
+  /// Returns the lux value as a [double].
   Future<double> getCurrentLightValue() async {
     return await _sensorService.getCurrentLightValue();
+  }
+
+  /// Retrieves the current proximity value from the sensor service.
+  /// Returns the distance in centimeters as a [double].
+  Future<double> getCurrentProximityValue() async {
+    return await _sensorService.getCurrentProximityValue();
   }
 }
