@@ -85,6 +85,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  // Helper method to build recommendation rows
+  Widget _buildRecommendationRow(String activity, String luxRange) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            activity,
+            style: const TextStyle(fontSize: 12),
+          ),
+          Text(
+            luxRange,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,9 +114,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                children: [
+                  const Icon(Icons.settings, color: Colors.blue, size: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Settings',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                  ),
+                ],
+              ),
               Text(
-                'Settings',
-                style: Theme.of(context).textTheme.headlineSmall,
+                'Customize your Eye Guardian',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[600],
+                    ),
               ),
               const SizedBox(height: 32),
               _buildLightSettingsSection(),
@@ -112,62 +147,218 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildLightSettingsSection() {
+    // Determine indicator emoji based on threshold
+    String indicatorEmoji;
+    if (_luxThreshold <= 200) {
+      indicatorEmoji = '🌙'; // Low light
+    } else if (_luxThreshold <= 400) {
+      indicatorEmoji = '🌤️'; // Medium light
+    } else if (_luxThreshold <= 700) {
+      indicatorEmoji = '☀️'; // Bright
+    } else {
+      indicatorEmoji = '🔆'; // Very bright
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Light Level Settings',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+        Row(
+          children: [
+            Icon(Icons.wb_sunny, color: Colors.amber),
+            const SizedBox(width: 8),
+            const Text(
+              'Light Level Settings',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Card(
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Optimal Light Threshold'),
+                const Text('How much light do you need?'),
                 const SizedBox(height: 4),
-                Text(
-                  '${_luxThreshold.toInt()} lux',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                Row(
+                  children: [
+                    Text(
+                      indicatorEmoji,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_luxThreshold.toInt()} lux',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text('Darker',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[300]
+                                    : null)),
+                    Expanded(
+                      child: Slider(
+                        value: _luxThreshold,
+                        min: 100,
+                        max: 1000,
+                        divisions: 18,
+                        activeColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.lightBlue[300]
+                                : Colors.blue,
+                        label: '${_luxThreshold.toInt()} lux',
+                        onChanged: (value) {
+                          setState(() {
+                            _luxThreshold = value;
+                          });
+                        },
+                      ),
+                    ),
+                    Text('Brighter',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[300]
+                                    : null)),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.tips_and_updates_outlined, size: 16),
+                          SizedBox(width: 8),
+                          Text(
+                            'Recommended settings:',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Text('📚 Reading: '),
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              '300-500 lux',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Text('✏️ Drawing: '),
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              '500-800 lux',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Slider(
-                  value: _luxThreshold,
-                  min: 100,
-                  max: 1000,
-                  divisions: 18,
-                  label: '${_luxThreshold.toInt()} lux',
-                  onChanged: (value) {
-                    setState(() {
-                      _luxThreshold = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Adjust this threshold based on your comfort. For normal reading and writing, 300-500 lux is recommended.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
                 const SizedBox(height: 16),
+
+                // Recommended light levels card
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.lightbulb_outline,
+                              size: 14, color: Colors.amber),
+                          SizedBox(width: 6),
+                          Text(
+                            'Recommended Light Levels',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _buildRecommendationRow(
+                          'Reading & Writing', '300-500 lux'),
+                      _buildRecommendationRow('Detailed Work', '500-1000 lux'),
+                      _buildRecommendationRow(
+                          'Casual & Relaxation', '200-300 lux'),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
                     onPressed: _isSaving ? null : _saveSettings,
-                    child: _isSaving
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    icon: _isSaving
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
-                        : const Text('Save Settings'),
+                        : const Icon(Icons.save),
+                    label: Text(_isSaving ? 'Saving...' : 'Save Settings'),
                   ),
                 ),
               ],
@@ -179,36 +370,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAboutSection() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'About EyeGuard',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+        const Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.blue),
+            SizedBox(width: 8),
+            Text(
+              'About Eye Guardian',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Card(
-          child: Padding(
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: const Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'EyeGuard helps protect your eyes by monitoring ambient light.',
-                  style: TextStyle(fontSize: 14),
+                Row(
+                  children: [
+                    Icon(Icons.remove_red_eye, color: Colors.blue),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Eye Guardian watches the light around you to help protect your eyes',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text('How it helps you:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('1. '),
+                    Expanded(
+                      child:
+                          Text('Warns you when lighting is too dark or bright'),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('2. '),
+                    Expanded(
+                      child: Text('Keeps track of your eye health over time'),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('3. '),
+                    Expanded(
+                      child: Text('Helps prevent eye strain and headaches'),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Recommended Light Levels:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  '👁️ Taking care of your eyes is important for your health and learning!',
+                  style: TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
                 ),
-                SizedBox(height: 8),
-                Text('• 300-500 lux: Reading and writing'),
-                Text('• 500-1000 lux: Detailed work'),
-                Text('• 100-200 lux: Relaxation'),
               ],
             ),
           ),
@@ -221,23 +460,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Data Management',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+        const Row(
+          children: [
+            Icon(Icons.storage, color: Colors.blue),
+            SizedBox(width: 8),
+            Text(
+              'Your Data',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Card(
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'All data is stored locally on your device.',
-                  style: TextStyle(fontSize: 14),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.blue,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Your light data is private and stays on your device',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Clearing data will remove all your light history',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -246,8 +535,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onPressed: _clearData,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Clear All Data'),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.delete_outline, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text('Clear All Data'),
+                      ],
+                    ),
                   ),
                 ),
               ],

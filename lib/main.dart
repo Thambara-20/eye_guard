@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Import services
 import 'services/notification_service.dart';
@@ -11,6 +12,7 @@ import 'services/light_monitor_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/welcome_screen.dart';
 
 // Import theme
 import 'utils/app_theme.dart';
@@ -31,19 +33,43 @@ void main() async {
     notificationService: notificationService,
   );
 
+  // Check if the user has completed onboarding
+  final prefs = await SharedPreferences.getInstance();
+  final bool onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+
   runApp(
     MultiProvider(
       providers: [
         Provider<LightMonitorService>.value(value: monitorService),
         Provider<StorageService>.value(value: storageService),
+        Provider<bool>.value(value: onboardingComplete),
       ],
       child: const EyeGuardApp(),
     ),
   );
 }
 
-class EyeGuardApp extends StatelessWidget {
+class EyeGuardApp extends StatefulWidget {
   const EyeGuardApp({super.key});
+
+  @override
+  State<EyeGuardApp> createState() => _EyeGuardAppState();
+}
+
+class _EyeGuardAppState extends State<EyeGuardApp> {
+  late bool _onboardingComplete;
+
+  @override
+  void initState() {
+    super.initState();
+    _onboardingComplete = Provider.of<bool>(context, listen: false);
+  }
+
+  void _completeOnboarding() {
+    setState(() {
+      _onboardingComplete = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +79,9 @@ class EyeGuardApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const MainScreen(),
+      home: _onboardingComplete
+          ? const MainScreen()
+          : WelcomeScreen(onComplete: _completeOnboarding),
     );
   }
 }
