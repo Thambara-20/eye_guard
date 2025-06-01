@@ -15,7 +15,7 @@ class LightMonitorService {
   bool _lightingNotificationShown = false;
   bool _proximityNotificationShown = false;
 
-  static const Duration _warningThreshold = Duration(minutes: 1);
+  static const Duration _warningThreshold = Duration(minutes: 5);
   static const double _safeDistanceThreshold = 30.0; // cm
 
   // Track if sensors are available
