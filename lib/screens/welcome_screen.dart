@@ -93,22 +93,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         )
                       : const SizedBox(width: 60),
                   _currentPage < _numPages - 1
-                      ? ElevatedButton(
-                          onPressed: () {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: const Text('Next'),
-                        )
-                      : ElevatedButton(
-                          onPressed: _completeOnboarding,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
+                      ? SizedBox(
+                          width: 100,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            child: const Text('Next'),
                           ),
-                          child: const Text('Get Started'),
+                        )
+                      : SizedBox(
+                          width: 120,
+                          child: ElevatedButton(
+                            onPressed: _completeOnboarding,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                            ),
+                            child: const Text('Get Started'),
+                          ),
                         ),
                 ],
               ),

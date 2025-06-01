@@ -397,10 +397,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.info_outline, color: Colors.blue),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Did You Know?',
                   style: TextStyle(
@@ -418,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.wb_sunny_outlined,
                   color: Colors.amber,
                   size: 16,
@@ -451,11 +451,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.sensors, color: Colors.blue, size: 16),
-              const SizedBox(width: 4),
-              const Text(
+              SizedBox(width: 4),
+              Text(
                 'Sensor Status:',
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
               ),
@@ -523,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? Colors.redAccent.withOpacity(0.3)
                 : Colors.blueAccent.withOpacity(0.3),
             blurRadius: 8,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -544,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
           widget.monitorService.isMonitoring
               ? 'Stop Watching My Eyes'
               : 'Start Watching My Eyes',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),

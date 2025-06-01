@@ -358,11 +358,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(Icons.info_outline, color: Colors.blue),
-            const SizedBox(width: 8),
-            const Text(
+            Icon(Icons.info_outline, color: Colors.blue),
+            SizedBox(width: 8),
+            Text(
               'About Eye Guardian',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -445,11 +445,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(Icons.storage, color: Colors.blue),
-            const SizedBox(width: 8),
-            const Text(
+            Icon(Icons.storage, color: Colors.blue),
+            SizedBox(width: 8),
+            Text(
               'Your Data',
               style: TextStyle(
                 fontWeight: FontWeight.bold,

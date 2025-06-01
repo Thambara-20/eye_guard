@@ -286,10 +286,10 @@ class _StatsScreenState extends State<StatsScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Flexible(
+                          Flexible(
                             flex: 1,
                             child: Text('Too Dark',
                                 style: TextStyle(fontSize: 10),
@@ -303,7 +303,7 @@ class _StatsScreenState extends State<StatsScreen> {
                                     fontSize: 10, color: Colors.green),
                                 overflow: TextOverflow.ellipsis),
                           ),
-                          const Flexible(
+                          Flexible(
                             flex: 1,
                             child: Text('Too Bright',
                                 textAlign: TextAlign.right,

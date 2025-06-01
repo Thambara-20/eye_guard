@@ -225,12 +225,15 @@ class _StatsScreenState extends State<StatsScreen> {
 
   Widget _statsCard(String title, String value, IconData icon, Color color) {
     String emoji = '';
-    if (title == 'Average')
+    if (title == 'Average') {
       emoji = '📊';
-    else if (title == 'Good Light')
+    } else if (title == 'Good Light')
+      // ignore: curly_braces_in_flow_control_structures
       emoji = '👍';
     else if (title == 'Poor Light')
+      // ignore: curly_braces_in_flow_control_structures
       emoji = '👎';
+    // ignore: curly_braces_in_flow_control_structures
     else if (title == 'Range') emoji = '📏';
 
     return Card(
@@ -414,10 +417,10 @@ class _StatsScreenState extends State<StatsScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Flexible(
+                          Flexible(
                             flex: 1,
                             child: Text('Too Dark',
                                 style: TextStyle(fontSize: 10),
@@ -431,7 +434,7 @@ class _StatsScreenState extends State<StatsScreen> {
                                     fontSize: 10, color: Colors.green),
                                 overflow: TextOverflow.ellipsis),
                           ),
-                          const Flexible(
+                          Flexible(
                             flex: 1,
                             child: Text('Too Bright',
                                 textAlign: TextAlign.right,
