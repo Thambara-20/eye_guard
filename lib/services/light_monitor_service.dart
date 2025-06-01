@@ -155,20 +155,21 @@ class LightMonitorService {
       if (poorLightingDuration > _warningThreshold &&
           !_lightingNotificationShown) {
         await _notificationService.showPoorLightingNotification(
-          id: 1,
+          id: 1, // This ID parameter is now ignored as we use a fixed ID internally
           title: 'Poor Lighting Detected',
           body:
               'You have been in poor lighting for ${poorLightingDuration.inMinutes} minutes. '
               'Consider improving your lighting conditions.',
         );
         _lightingNotificationShown = true;
-        // Reset the start time to avoid repeated notifications
+        // Reset the start time to allow showing updated notifications
         _poorLightingStartTime = DateTime.now();
       }
     } else {
       _poorLightingStartTime = null;
       if (_lightingNotificationShown) {
-        await _notificationService.cancelNotification(1);
+        await _notificationService
+            .cancelNotification(100); // Use the fixed ID (100)
         _lightingNotificationShown = false;
       }
     }
@@ -186,7 +187,7 @@ class LightMonitorService {
       if (proximityDuration > _warningThreshold &&
           !_proximityNotificationShown) {
         await _notificationService.showPoorLightingNotification(
-          id: 2,
+          id: 2, // This ID parameter is now ignored as we use a fixed ID internally
           title: 'Too Close to Screen',
           body:
               'You have been too close (<30cm) for ${proximityDuration.inMinutes} minutes. '
@@ -197,7 +198,8 @@ class LightMonitorService {
     } else {
       _closeProximityStartTime = null;
       if (_proximityNotificationShown) {
-        await _notificationService.cancelNotification(2);
+        await _notificationService
+            .cancelNotification(100); // Use the fixed ID (100)
         _proximityNotificationShown = false;
       }
     }

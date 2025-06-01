@@ -50,14 +50,22 @@ class NotificationService {
         );
 
     debugPrint('NotificationService initialized with real implementation');
-  }
+  } // Constants for notification IDs
 
-  // Show poor lighting notification
+  static const int poorLightingNotificationId = 100;
+  static const int proximityNotificationId = 101;
+
+  // Show poor lighting notification - always using a fixed ID to replace previous notifications
   Future<void> showPoorLightingNotification({
-    required int id,
+    required int id, // Parameter kept for backward compatibility but not used
     required String title,
     required String body,
   }) async {
+    // Use the appropriate notification ID based on the title
+    final int notificationId = title.contains('Lighting')
+        ? poorLightingNotificationId
+        : proximityNotificationId;
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'poor_lighting_channel',
@@ -68,6 +76,11 @@ class NotificationService {
       icon: '@mipmap/ic_launcher',
       enableVibration: true,
       playSound: true,
+      // Set these to true to ensure the notification replaces the previous one
+      channelShowBadge: true,
+      autoCancel: false,
+      ongoing: true, // Makes it persistent until user dismisses or we cancel it
+      onlyAlertOnce: false, // Alert each time for important lighting changes
     );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -82,8 +95,12 @@ class NotificationService {
       iOS: iOSPlatformChannelSpecifics,
     );
 
+    // Cancel any existing notification with this ID first
+    await _flutterLocalNotificationsPlugin.cancel(notificationId);
+
+    // Show new notification with the fixed ID
     await _flutterLocalNotificationsPlugin.show(
-      id,
+      notificationId, // Always use the same ID to replace previous notification
       title,
       body,
       platformChannelSpecifics,
