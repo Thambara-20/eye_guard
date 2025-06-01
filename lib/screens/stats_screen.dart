@@ -160,7 +160,9 @@ class _StatsScreenState extends State<StatsScreen> {
                     _formatDateTime(DateTime.now()),
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400]
+                          : Colors.grey[600],
                     ),
                   ),
                 ],
@@ -173,7 +175,9 @@ class _StatsScreenState extends State<StatsScreen> {
           'Monitor your eye health and lighting conditions',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey[600],
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[400]
+                : Colors.grey[600],
           ),
         ),
       ],
@@ -183,7 +187,9 @@ class _StatsScreenState extends State<StatsScreen> {
   Widget _buildPeriodSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[800]
+            : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -198,7 +204,10 @@ class _StatsScreenState extends State<StatsScreen> {
               selected: isSelected,
               selectedColor: Colors.blue.withOpacity(0.7),
               labelStyle: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).textTheme.bodyLarge?.color ??
+                        Colors.white70,
               ),
               onSelected: (selected) {
                 if (selected) {
@@ -241,7 +250,12 @@ class _StatsScreenState extends State<StatsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.1), Colors.white],
+          colors: [
+            color.withOpacity(0.1),
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[850]!
+                : Colors.white
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -269,7 +283,9 @@ class _StatsScreenState extends State<StatsScreen> {
                   '$goodPercentage% of time in good light • Average: $averageLux lux',
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey[700],
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[300]
+                        : Colors.grey[700],
                   ),
                 ),
               ],
@@ -369,7 +385,12 @@ class _StatsScreenState extends State<StatsScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white, color.withOpacity(0.15)],
+            colors: [
+              Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey[800]!
+                  : Colors.white,
+              color.withOpacity(0.15)
+            ],
           ),
         ),
         child: Column(
@@ -383,7 +404,9 @@ class _StatsScreenState extends State<StatsScreen> {
                   child: Text(
                     title,
                     style: TextStyle(
-                      color: Colors.grey[700],
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[300]
+                          : Colors.grey[700],
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -417,7 +440,9 @@ class _StatsScreenState extends State<StatsScreen> {
               description,
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.grey[600],
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey[600],
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -482,9 +507,13 @@ class _StatsScreenState extends State<StatsScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.insights, color: Colors.blue, size: 20),
+                Icon(Icons.insights,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.lightBlue[300]
+                        : Colors.blue,
+                    size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Your Eye Health Score',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -519,7 +548,9 @@ class _StatsScreenState extends State<StatsScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : Colors.grey[600],
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -529,20 +560,29 @@ class _StatsScreenState extends State<StatsScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[800]
+                            : Colors.grey[100],
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.bar_chart,
-                              size: 14, color: Colors.blue),
+                          Icon(Icons.bar_chart,
+                              size: 14,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.lightBlue[300]
+                                  : Colors.blue),
                           const SizedBox(width: 6),
                           Text(
                             '${_recentReadings.length} readings collected',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[700],
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey[300]
+                                  : Colors.grey[700],
                             ),
                           ),
                         ],
@@ -609,17 +649,17 @@ class _StatsScreenState extends State<StatsScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Too Dark',
-                style: TextStyle(fontSize: 10, color: Colors.red),
+                style: TextStyle(fontSize: 10, color: Colors.red[300]),
                 overflow: TextOverflow.ellipsis),
             Text('Perfect',
-                style: TextStyle(fontSize: 10, color: Colors.green),
+                style: TextStyle(fontSize: 10, color: Colors.green[400]),
                 overflow: TextOverflow.ellipsis),
             Text('Too Bright',
-                style: TextStyle(fontSize: 10, color: Colors.red),
+                style: TextStyle(fontSize: 10, color: Colors.red[300]),
                 overflow: TextOverflow.ellipsis),
           ],
         ),
@@ -628,27 +668,34 @@ class _StatsScreenState extends State<StatsScreen> {
   }
 
   Widget _infoChip(String label, IconData icon) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[800] : Colors.grey[100],
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[800]
+            : Colors.grey[100],
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-            color: isDark ? Colors.grey[700]! : Colors.grey.withOpacity(0.3)),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.withOpacity(0.5)
+                : Colors.grey.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon,
-              size: 12, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+              size: 12,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey[400]
+                  : Colors.grey[600]),
           const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              color: isDark ? Colors.grey[300] : Colors.grey[700],
-            ),
+                fontSize: 12,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[300]
+                    : Colors.grey[700]),
           ),
         ],
       ),
@@ -666,9 +713,12 @@ class _StatsScreenState extends State<StatsScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.tips_and_updates, color: Colors.amber[700]),
+                Icon(Icons.tips_and_updates,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.amber[300]
+                        : Colors.amber[700]),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Tips for Healthy Eyes',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -701,12 +751,20 @@ class _StatsScreenState extends State<StatsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: Colors.blue),
+          Icon(icon,
+              size: 16,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.lightBlue[300]
+                  : Colors.blue),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               tip,
-              style: const TextStyle(fontSize: 13),
+              style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[300]
+                      : null),
             ),
           ),
         ],
@@ -720,12 +778,16 @@ class _StatsScreenState extends State<StatsScreen> {
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.hourglass_empty, size: 48, color: Colors.grey),
-              SizedBox(height: 16),
+              Icon(Icons.hourglass_empty,
+                  size: 48,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[400]
+                      : Colors.grey),
+              const SizedBox(height: 16),
               Text(
                 'No light data collected yet',
                 style: TextStyle(

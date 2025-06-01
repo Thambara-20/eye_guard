@@ -102,7 +102,6 @@ class AppTheme {
           valueIndicatorTextStyle: const TextStyle(color: Colors.white),
         ),
       );
-
   // Dark theme
   static ThemeData get darkTheme => ThemeData(
         primaryColor: primaryColor,
@@ -110,6 +109,12 @@ class AppTheme {
           primary: primaryColor,
           secondary: accentColor.withOpacity(0.8),
           error: dangerColor,
+          onPrimary: Colors.white,
+          onSecondary: Colors.white,
+          onBackground: Colors.white,
+          onSurface: Colors.white,
+          onError: Colors.white,
+          surface: const Color(0xFF252525),
         ),
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF121212),
@@ -120,14 +125,18 @@ class AppTheme {
           titleTextStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           selectedItemColor: primaryColor,
-          unselectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.grey[400],
+          backgroundColor: const Color(0xFF1A1A1A),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
+            backgroundColor: primaryColor,
+            foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 50),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -137,15 +146,60 @@ class AppTheme {
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF3A3A3A)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF3A3A3A)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: primaryColor, width: 2),
           ),
           filled: true,
-          fillColor: Colors.grey[900],
+          fillColor: Colors.grey[850],
+          labelStyle: const TextStyle(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey[600]),
         ),
         cardTheme: CardTheme(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          color: const Color(0xFF252525),
+        ),
+        textTheme: const TextTheme(
+          headlineSmall: TextStyle(
+              fontWeight: FontWeight.w700, fontSize: 24, color: Colors.white),
+          titleMedium: TextStyle(
+              fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white),
+          bodyLarge: TextStyle(color: Colors.grey, fontSize: 16),
+          bodyMedium: TextStyle(color: Colors.grey),
+        ),
+        dividerTheme: const DividerThemeData(
+          thickness: 1,
+          space: 32,
+          color: Color(0xFF2A2A2A),
+        ),
+        sliderTheme: SliderThemeData(
+          activeTrackColor: primaryColor,
+          inactiveTrackColor: primaryColor.withOpacity(0.2),
+          thumbColor: primaryColor,
+          overlayColor: primaryColor.withOpacity(0.1),
+          valueIndicatorColor: primaryColor,
+          valueIndicatorTextStyle: const TextStyle(color: Colors.white),
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: const Color(0xFF2A2A2A),
+          disabledColor: Colors.grey[800],
+          selectedColor: primaryColor,
+          secondarySelectedColor: primaryColor,
+          labelStyle: const TextStyle(color: Colors.white),
+          secondaryLabelStyle: const TextStyle(color: Colors.white),
+          brightness: Brightness.dark,
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white70,
         ),
       );
 }

@@ -206,14 +206,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Text('Darker', style: TextStyle(fontSize: 12)),
+                    Text('Darker',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[300]
+                                    : null)),
                     Expanded(
                       child: Slider(
                         value: _luxThreshold,
                         min: 100,
                         max: 1000,
                         divisions: 18,
-                        activeColor: Colors.blue,
+                        activeColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.lightBlue[300]
+                                : Colors.blue,
                         label: '${_luxThreshold.toInt()} lux',
                         onChanged: (value) {
                           setState(() {
@@ -222,7 +231,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
-                    const Text('Brighter', style: TextStyle(fontSize: 12)),
+                    Text('Brighter',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[300]
+                                    : null)),
                   ],
                 ),
                 Container(

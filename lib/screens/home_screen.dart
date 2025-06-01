@@ -252,7 +252,9 @@ class _HomeScreenState extends State<HomeScreen> {
           width: maxSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.grey[200],
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[800]
+                : Colors.grey[200],
             boxShadow: [
               BoxShadow(
                 color: _statusColor.withOpacity(0.3),
@@ -275,7 +277,9 @@ class _HomeScreenState extends State<HomeScreen> {
           width: centerSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF252525)
+                : Colors.white,
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.3),
@@ -305,7 +309,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   '${_currentLuxValue.toStringAsFixed(0)} lux',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : Colors.grey,
                         fontSize: screenWidth < 360 ? 10 : 12,
                       ),
                 ),
@@ -395,10 +401,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.blue),
-                SizedBox(width: 8),
+                Icon(Icons.info_outline,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.lightBlue[300]
+                        : Colors.blue),
+                const SizedBox(width: 8),
                 Text(
                   'Did You Know?',
                   style: TextStyle(
@@ -416,15 +425,17 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.wb_sunny_outlined,
-                  color: Colors.amber,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.amber[300]
+                      : Colors.amber,
                   size: 16,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Recommended: ${_threshold.toInt()} lux',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
