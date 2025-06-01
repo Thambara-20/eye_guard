@@ -102,4 +102,4 @@ flutter_launcher_icons:
   image_path: "assets/icon/eye_guard_icon.png"
   min_sdk_android: 21
   adaptive_icon_foreground: "assets/icon/eye_guard_icon.png"
-  adaptive_icon_background: "#42A5F5"
+  adaptive_icon_background: "#000000"

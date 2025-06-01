@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/light_monitor_service.dart';
 import '../services/storage_service.dart';
-import '../widgets/eye_care_tips_widget.dart';
-import '../widgets/eye_health_summary_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final LightMonitorService monitorService;
@@ -556,43 +554,6 @@ class _HomeScreenState extends State<HomeScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-    );
-  }
-
-  Widget _buildEyeCareTipsWidget() {
-    return const EyeCareTipsWidget();
-  }
-
-  Widget _buildEyeHealthSummary() {
-    // For a real application, you would calculate these values based on actual user data
-    // Here we're using placeholders for demonstration
-    int screenTimeMinutes = 120; // Sample value
-    int poorLightingPercent = 25; // Sample value
-
-    String status;
-    IconData icon;
-    Color color;
-
-    if (poorLightingPercent > 50) {
-      status = "Poor Light Environment";
-      icon = Icons.warning;
-      color = Colors.red;
-    } else if (screenTimeMinutes > 240) {
-      status = "Excessive Screen Time";
-      icon = Icons.error_outline;
-      color = Colors.orange;
-    } else {
-      status = "Good Eye Health";
-      icon = Icons.check_circle_outline;
-      color = Colors.green;
-    }
-
-    return EyeHealthSummaryWidget(
-      dailyExposureMinutes: screenTimeMinutes,
-      poorLightingPercentage: poorLightingPercent,
-      overallStatus: status,
-      statusIcon: icon,
-      statusColor: color,
     );
   }
 }
