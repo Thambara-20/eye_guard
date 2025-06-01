@@ -43,9 +43,8 @@ dependencies:
 
   # Charts for statistics - temporarily commented out to reduce space needed
   # fl_chart: ^0.63.0
-
-  # Local notifications - temporarily commented out to reduce space needed
-  # flutter_local_notifications: ^15.1.1
+  # Local notifications
+  flutter_local_notifications: ^15.1.1
 
 dev_dependencies:
   flutter_test:

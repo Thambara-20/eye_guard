@@ -162,6 +162,8 @@ class LightMonitorService {
               'Consider improving your lighting conditions.',
         );
         _lightingNotificationShown = true;
+        // Reset the start time to avoid repeated notifications
+        _poorLightingStartTime = DateTime.now();
       }
     } else {
       _poorLightingStartTime = null;
