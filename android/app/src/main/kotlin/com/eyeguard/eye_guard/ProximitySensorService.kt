@@ -59,11 +59,41 @@ class ProximitySensorService : Service(), SensorEventListener {
             .setContentIntent(pendingIntent)
             .build()
         startForeground(NOTIFICATION_ID, notification)
+        
         if (proximitySensor != null) {
-            sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL)
+            // Try with different sampling rates if the default fails
+            val registrationSuccess = sensorManager.registerListener(
+                this,
+                proximitySensor,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+            
+            if (!registrationSuccess) {
+                // First retry with a different delay
+                val retrySuccess = sensorManager.registerListener(
+                    this,
+                    proximitySensor,
+                    SensorManager.SENSOR_DELAY_UI
+                )
+                
+                if (!retrySuccess) {
+                    // Second retry with an even different delay
+                    val finalAttempt = sensorManager.registerListener(
+                        this,
+                        proximitySensor,
+                        SensorManager.SENSOR_DELAY_GAME
+                    )
+                    
+                    if (!finalAttempt) {
+                        android.util.Log.e("ProximitySensorService", "Failed to register proximity sensor after multiple attempts")
+                    }
+                }
+            }
         } else {
+            android.util.Log.e("ProximitySensorService", "No proximity sensor available on this device")
             stopSelf()
         }
+        
         return START_STICKY
     }
 

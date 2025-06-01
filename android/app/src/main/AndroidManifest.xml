@@ -1,11 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Permissions for ambient light sensor -->
+    <!-- Permissions for ambient light sensor - making it optional -->
+    <uses-feature android:name="android.hardware.sensor.light" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.proximity" android:required="false" />
+
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.sensor.light" android:required="true" />
+
     <application
         android:label="EyeGuard"
         android:name="${applicationName}"
@@ -37,9 +39,14 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Declare our background service for light sensor monitoring -->
+        <!-- Declare our background services for sensor monitoring -->
         <service
             android:name=".LightSensorService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
+
+        <service
+            android:name=".ProximitySensorService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
     </application>

@@ -74,15 +74,39 @@ class LightSensorService : Service(), SensorEventListener {
             
         startForeground(NOTIFICATION_ID, notification)
         
-        // Register sensor listener
+        // Register sensor listener with multiple retry attempts and sampling rate
         if (lightSensor != null) {
-            sensorManager.registerListener(
+            // Try with different sampling rates if the default fails
+            val registrationSuccess = sensorManager.registerListener(
                 this,
                 lightSensor,
                 SensorManager.SENSOR_DELAY_NORMAL
             )
+            
+            if (!registrationSuccess) {
+                // First retry with a different delay
+                val retrySuccess = sensorManager.registerListener(
+                    this,
+                    lightSensor,
+                    SensorManager.SENSOR_DELAY_UI
+                )
+                
+                if (!retrySuccess) {
+                    // Second retry with an even different delay
+                    val finalAttempt = sensorManager.registerListener(
+                        this,
+                        lightSensor,
+                        SensorManager.SENSOR_DELAY_GAME
+                    )
+                    
+                    if (!finalAttempt) {
+                        android.util.Log.e("LightSensorService", "Failed to register light sensor after multiple attempts")
+                    }
+                }
+            }
         } else {
             // No light sensor available
+            android.util.Log.e("LightSensorService", "No light sensor available on this device")
             stopSelf() // Stop service if no sensor is available
         }
         

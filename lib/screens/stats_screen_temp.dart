@@ -174,7 +174,7 @@ class _StatsScreenState extends State<StatsScreen> {
           ),
           _statsCard(
             'Range',
-            '${_stats['minLux'].toStringAsFixed(0)} - ${_stats['maxLux'].toStringAsFixed(0)} lux',
+            '${_stats['minLux'].toStringAsFixed(0)}-${_stats['maxLux'].toStringAsFixed(0)}',
             Icons.compare_arrows,
             Colors.blue,
           ),
@@ -196,21 +196,27 @@ class _StatsScreenState extends State<StatsScreen> {
               children: [
                 Icon(icon, color: color, size: 16),
                 const SizedBox(width: 4),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+            Flexible(
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -280,14 +286,49 @@ class _StatsScreenState extends State<StatsScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Flexible(
+                            flex: 1,
+                            child: Text('Too Dark',
+                                style: TextStyle(fontSize: 10),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Text('Perfect',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.green),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                          const Flexible(
+                            flex: 1,
+                            child: Text('Too Bright',
+                                textAlign: TextAlign.right,
+                                style: TextStyle(fontSize: 10),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
                       Text(
-                          'Min: ${minLux.toStringAsFixed(1)} lux  |  Max: ${maxLux.toStringAsFixed(1)} lux'),
+                          'Min: ${minLux.toStringAsFixed(1)} | Max: ${maxLux.toStringAsFixed(1)}',
+                          overflow: TextOverflow.ellipsis),
                       const SizedBox(height: 16),
-                      Text('${_recentReadings.length} readings recorded'),
-                      Text(
-                          'First: ${_recentReadings.first.timestamp.toString().substring(0, 16)}'),
-                      Text(
-                          'Last: ${_recentReadings.last.timestamp.toString().substring(0, 16)}'),
+                      Text('${_recentReadings.length} readings recorded',
+                          overflow: TextOverflow.ellipsis),
+                      Flexible(
+                        child: Text(
+                            'First: ${_recentReadings.first.timestamp.toString().substring(0, 16)}',
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      Flexible(
+                        child: Text(
+                            'Last: ${_recentReadings.last.timestamp.toString().substring(0, 16)}',
+                            overflow: TextOverflow.ellipsis),
+                      ),
                     ],
                   ),
                 ),
