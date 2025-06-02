@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import '../services/storage_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   double _luxThreshold = StorageService.defaultThreshold;
   bool _isSaving = false;
+  bool _backgroundMonitoring = true; // Default to enabled
 
   @override
   void initState() {
@@ -25,8 +27,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadSettings() async {
     final threshold = await widget.storageService.getLuxThreshold();
+    final backgroundEnabled =
+        await widget.storageService.getBackgroundMonitoring() ?? true;
+
     setState(() {
       _luxThreshold = threshold;
+      _backgroundMonitoring = backgroundEnabled;
     });
   }
 
@@ -36,6 +42,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
 
     await widget.storageService.saveLuxThreshold(_luxThreshold);
+    await widget.storageService.saveBackgroundMonitoring(_backgroundMonitoring);
+
+    // Update the background service based on the setting
+    final service = FlutterBackgroundService();
+    if (_backgroundMonitoring) {
+      await service.startService();
+    } else {
+      service.invoke("stopService");
+    }
 
     if (mounted) {
       setState(() {
@@ -49,6 +64,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
     }
+  }
+
+  Widget _buildBackgroundSection() {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.notifications_active, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'Background Monitoring',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Keep monitoring even when the app is closed. This enables notifications about poor lighting conditions anytime.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Background Monitoring'),
+              subtitle: Text(_backgroundMonitoring
+                  ? 'Enabled - Monitors continuously in background'
+                  : 'Disabled - Only monitors when app is open'),
+              value: _backgroundMonitoring,
+              onChanged: (value) {
+                setState(() {
+                  _backgroundMonitoring = value;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _clearData() async {
@@ -135,6 +195,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 32),
               _buildLightSettingsSection(),
+              const SizedBox(height: 32),
+              _buildBackgroundSection(),
               const SizedBox(height: 32),
               _buildAboutSection(),
               const SizedBox(height: 32),

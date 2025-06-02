@@ -21,6 +21,10 @@ class SensorService {
   Stream<ProximityReading> get proximityReadingStream =>
       _proximityReadingController.stream;
 
+  // Store the latest readings for background service access
+  LightReading? _latestLightReading;
+  ProximityReading? _latestProximityReading;
+
   Timer? _lightPollingTimer;
   Timer? _proximityPollingTimer;
   bool _isRunning = false;
@@ -144,6 +148,36 @@ class SensorService {
     } catch (e) {
       print('Error getting proximity value: $e');
       return 40.0;
+    }
+  }
+
+  /// Gets the latest light reading for background monitoring.
+  /// Returns a [LightReading] or null if no reading is available.
+  Future<LightReading?> getLatestLightReading() async {
+    try {
+      final luxValue = await getCurrentLightValue();
+      return LightReading(
+        timestamp: DateTime.now(),
+        luxValue: luxValue,
+      );
+    } catch (e) {
+      print('Error getting latest light reading: $e');
+      return null;
+    }
+  }
+
+  /// Gets the latest proximity reading for background monitoring.
+  /// Returns a [ProximityReading] or null if no reading is available.
+  Future<ProximityReading?> getLatestProximityReading() async {
+    try {
+      final distance = await getCurrentProximityValue();
+      return ProximityReading(
+        timestamp: DateTime.now(),
+        distance: distance,
+      );
+    } catch (e) {
+      print('Error getting latest proximity reading: $e');
+      return null;
     }
   }
 

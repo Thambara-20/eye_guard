@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 
 // Import services
 import 'services/notification_service.dart';
 import 'services/sensor_service.dart';
 import 'services/storage_service.dart';
 import 'services/light_monitor_service.dart';
+import 'services/background_service.dart';
 
 // Import screens
 import 'screens/home_screen.dart';
@@ -32,6 +34,9 @@ void main() async {
     storageService: storageService,
     notificationService: notificationService,
   );
+
+  // Initialize background service
+  await BackgroundService().initializeService();
 
   // Check if the user has completed onboarding
   final prefs = await SharedPreferences.getInstance();
@@ -96,7 +101,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   late List<Widget> _screens;
-
   @override
   void initState() {
     super.initState();
@@ -121,6 +125,25 @@ class _MainScreenState extends State<MainScreen> {
 
     // Start monitoring when the app is launched
     monitorService.startMonitoring();
+
+    // Check if background monitoring is enabled
+    _checkBackgroundMonitoring(storageService);
+  }
+
+  Future<void> _checkBackgroundMonitoring(StorageService storageService) async {
+    // Get background monitoring setting
+    final backgroundEnabled =
+        await storageService.getBackgroundMonitoring() ?? true;
+
+    if (backgroundEnabled) {
+      // Ensure background service is running
+      final service = FlutterBackgroundService();
+      final isRunning = await service.isRunning();
+
+      if (!isRunning) {
+        await service.startService();
+      }
+    }
   }
 
   @override
