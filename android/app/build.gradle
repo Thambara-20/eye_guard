@@ -64,4 +64,20 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
+}
+
+// Force Kotlin compatibility
+configurations.all {
+    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"
+    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22"
+}

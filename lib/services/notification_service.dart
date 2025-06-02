@@ -12,23 +12,14 @@ class NotificationService {
 
   // Singleton instance
   factory NotificationService() => _instance;
-
   // Initialize notifications
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: true,
-    );
-
     const InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
     );
 
     await _flutterLocalNotificationsPlugin.initialize(
@@ -38,16 +29,6 @@ class NotificationService {
         debugPrint('Notification clicked: ${notificationResponse.payload}');
       },
     );
-
-    // Request permission on iOS
-    await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
 
     debugPrint('NotificationService initialized with real implementation');
   } // Constants for notification IDs

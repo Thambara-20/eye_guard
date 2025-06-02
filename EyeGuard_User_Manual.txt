@@ -1,0 +1,152 @@
+USER MANUAL: Eye Guard
+
+Version 1.0
+June 2, 2025
+Eye Guard © Your Name/Team Name
+
+TABLE OF CONTENTS
+
+1. INTRODUCTION
+   1.1 Purpose
+   1.2 Audience
+2. SYSTEM DESCRIPTION
+   2.1 Key Features
+   2.2 System Operations
+   2.3 System Components
+3. APPLICATION INSTALLATION
+   3.1 First-Time Users
+   3.2 Developer Setup
+4. SYSTEM USAGE
+   4.1 Initial Setup & Permissions
+   4.2 Home Screen Overview
+   4.3 Understanding Light Monitoring
+   4.4 Viewing Statistics
+   4.5 Notifications
+   4.6 Settings
+   4.7 Eye Care Tips
+5. TROUBLESHOOTING & FAQS
+6. SERVICE MANAGEMENT
+
+---
+
+1 INTRODUCTION
+
+1.1 PURPOSE
+The Eye Guard application is a mobile tool designed to help users protect their eyes by monitoring ambient light levels and providing timely advice and notifications. It aims to reduce eye strain and promote healthier screen-time habits by making users aware of their environmental lighting conditions.
+
+1.2 AUDIENCE
+This document is intended for end-users of the Eye Guard application, providing guidance on its installation, features, and usage. It may also be useful for developers looking to understand the application's functionality.
+
+2 SYSTEM DESCRIPTION
+
+2.1 KEY FEATURES
+The Eye Guard application offers the following key features:
+* Ambient Light Monitoring: Continuously or periodically monitors the surrounding light intensity using the device's light sensor.
+* Proximity Sensing: May utilize the proximity sensor to detect if the screen is too close to the user's eyes for extended periods.
+* Personalized Notifications: Alerts users to potentially harmful light conditions (too dim, too bright) or prolonged close screen proximity.
+* Usage Statistics: Provides insights and summaries of light exposure and screen habits over time.
+* Eye Care Tips: Offers actionable advice and tips for maintaining eye health.
+* Background Operation: Can monitor conditions even when the app is not in the foreground, thanks to background services.
+* Local Data Storage: Securely stores user preferences and monitoring data on the device.
+* Customizable Settings: Allows users to adjust monitoring sensitivity, notification preferences, and other settings.
+
+2.2 SYSTEM OPERATIONS
+Under normal conditions, Eye Guard runs in the background, periodically checking sensor data.
+* Sensor Interaction: The app accesses the device's light and possibly proximity sensors.
+* Data Processing: Raw sensor data is processed to determine if current conditions warrant a notification or should be logged for statistical analysis.
+* Notifications: If predefined thresholds are met (e.g., light too low for reading, screen too close), a local notification is triggered.
+* User Interface: The app provides screens for viewing current status, historical data, tips, and configuring settings.
+An active internet connection is generally not required for core monitoring and notification features, as it primarily relies on local sensors and storage.
+
+2.3 SYSTEM COMPONENTS
+The application primarily consists of:
+* Frontend User Interface: Developed using Flutter, providing an intuitive experience for users to interact with the app's features.
+* Sensor Services: Modules responsible for interfacing with the device's ambient light and proximity sensors.
+* Background Processing Engine: Manages tasks that run in the background to ensure continuous monitoring without requiring the app to be open.
+* Notification System: Handles the generation and display of local alerts to the user.
+* Data Storage: Utilizes on-device storage for user settings and historical data.
+* Data Models: Defines the structure for data like light readings and proximity readings.
+
+3 APPLICATION INSTALLATION
+
+3.1 FIRST-TIME USERS
+1. Download Eye Guard from the official app store (e.g., Google Play Store, Apple App Store).
+2. Once installed, open the application.
+3. You may be guided through a welcome experience.
+4. Grant necessary permissions:
+   * Sensor Access: Permission to access the device's light sensor (and proximity sensor if applicable) is crucial for the app's core functionality.
+   * Notifications: Allow the app to send notifications so you can receive timely alerts.
+   * Background Activity: Depending on the OS, you might need to allow the app to run in the background or be excluded from battery optimization for consistent monitoring.
+
+3.2 DEVELOPER SETUP
+1. Clone the project repository: `git clone <your_repository_url>`
+2. Ensure you have Flutter SDK installed and configured on your development machine.
+3. Open the project in your preferred IDE (e.g., VS Code, Android Studio).
+4. Open a terminal window in the project root directory.
+5. Run the command: `flutter pub get`. This will install all necessary Flutter packages listed in `pubspec.yaml`.
+6. Connect an Android/iOS device or start an emulator/simulator.
+7. In the terminal, execute the command: `flutter run`. This will build and launch the application on the connected device/emulator.
+
+4 SYSTEM USAGE
+
+4.1 INITIAL SETUP & PERMISSIONS
+Upon first launch, Eye Guard will likely guide you through an initial setup process.
+* Permissions: Carefully review and grant the requested permissions. The app needs access to sensors (light, proximity) and the ability to show notifications to function correctly.
+* Preferences: You might be asked about your typical screen usage or sensitivity preferences to tailor the monitoring.
+
+4.2 HOME SCREEN OVERVIEW
+The home screen is your main dashboard. It will typically display:
+* Current Ambient Light Status: A real-time indication of the current light level (e.g., "Good," "Too Dim," "Too Bright").
+* Proximity Status (if applicable): Information about screen distance.
+* Quick Summary: Perhaps a brief overview of recent eye health metrics.
+* Navigation: Easy access to other sections like Statistics, Settings, and Eye Care Tips.
+
+4.3 UNDERSTANDING LIGHT MONITORING
+Eye Guard uses your device's ambient light sensor to measure the brightness of your surroundings.
+* Ideal Conditions: The app will have predefined ranges for what it considers optimal, too dim, or too bright lighting for activities like reading or general screen use.
+* How it Works: The service runs (potentially in the background) and periodically samples the light sensor. If readings fall outside healthy ranges for a sustained period, it may trigger a notification.
+
+4.4 VIEWING STATISTICS
+The Statistics screen provides insights into your light exposure and screen habits over time. You might find:
+* Charts and Graphs: Visual representations of light level trends (e.g., time spent in dim vs. bright light).
+* Historical Data: A log or summary of past readings and alerts.
+* Usage Patterns: Information that helps you understand when and where you might be most at risk of eye strain.
+
+4.5 NOTIFICATIONS
+Eye Guard will send you notifications to alert you to potentially harmful conditions:
+* Low Light Warning: If you're using your screen in an environment that's too dark.
+* Excessive Brightness Warning: If the ambient light (or screen brightness, if monitored) is too high.
+* Proximity Alert: If you're holding your device too close to your eyes for too long.
+* Break Reminders: Potentially, reminders to take breaks from screen time.
+You can usually customize notification preferences in the Settings screen.
+
+4.6 SETTINGS
+The Settings screen allows you to customize Eye Guard's behavior:
+* Monitoring Sensitivity: Adjust how sensitive the app is to changes in light or proximity.
+* Notification Preferences: Enable/disable specific types of notifications, change alert sounds, etc.
+* Background Monitoring: Configure how actively the app monitors in the background (this might impact battery life).
+* Data Management: Options to clear stored data or reset preferences.
+
+4.7 EYE CARE TIPS
+This section provides helpful advice for maintaining good eye health, such as:
+* The 20-20-20 rule.
+* Proper screen distance and posture.
+* Importance of blinking.
+* Tips for adjusting screen brightness.
+
+5 TROUBLESHOOTING & FAQS
+
+* Q: Why am I not receiving notifications?
+   * A: Check that Eye Guard has notification permissions enabled in your device settings. Ensure background activity is allowed and the app is not overly restricted by battery optimization settings. Verify notification preferences within the app's settings screen.
+* Q: The light readings seem inaccurate.
+   * A: Ensure your device's light sensor (usually near the front camera) is not obstructed. Extreme environmental conditions can sometimes affect sensor accuracy.
+* Q: Does the app drain my battery?
+   * A: Continuous background monitoring can consume some battery. Eye Guard is designed to be efficient, but you can often adjust monitoring frequency or background activity in the settings to balance functionality with battery life.
+* Q: How is my data used?
+   * A: Eye Guard primarily uses local storage for your settings and monitoring data. Refer to the app's privacy policy (if available) for detailed information.
+
+6 SERVICE MANAGEMENT
+
+* Background Activity: For continuous monitoring, Eye Guard relies on background services. Ensure your device's operating system allows the app to run in the background. Some aggressive battery savers might interfere with its operation. You may need to add Eye Guard to an "allowed" list in your battery settings.
+* App Updates: Keep the application updated to the latest version from the app store to benefit from new features, bug fixes, and performance improvements.
+* Sensor Health: The app's functionality depends on your device's physical sensors. If you suspect a hardware issue with your light or proximity sensor, other apps using these sensors might also be affected.

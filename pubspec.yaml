@@ -37,7 +37,6 @@ dependencies:
     ^1.0.6
     # Local storage
   shared_preferences: ^2.2.1
-
   # State management
   provider: ^6.0.5
 
@@ -45,6 +44,11 @@ dependencies:
   # fl_chart: ^0.63.0
   # Local notifications
   flutter_local_notifications: ^15.1.1
+
+  # Background service
+  flutter_background_service: ^5.1.0
+  flutter_background_service_android: ^6.3.0
+  device_info_plus: ^10.1.2
 
 dev_dependencies:
   flutter_test:
