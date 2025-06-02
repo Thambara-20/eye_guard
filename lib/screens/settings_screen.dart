@@ -16,6 +16,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   double _luxThreshold = StorageService.defaultThreshold;
   bool _isSaving = false;
+  bool _backgroundMonitoringEnabled = true;
 
   @override
   void initState() {
@@ -25,8 +26,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadSettings() async {
     final threshold = await widget.storageService.getLuxThreshold();
+    final backgroundEnabled =
+        await widget.storageService.getBackgroundMonitoring();
     setState(() {
       _luxThreshold = threshold;
+      _backgroundMonitoringEnabled = backgroundEnabled;
     });
   }
 
@@ -135,6 +139,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 32),
               _buildLightSettingsSection(),
+              const SizedBox(height: 24),
+              _buildBackgroundMonitoringSection(),
               const SizedBox(height: 32),
               _buildAboutSection(),
               const SizedBox(height: 32),
@@ -360,6 +366,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         : const Icon(Icons.save),
                     label: Text(_isSaving ? 'Saving...' : 'Save Settings'),
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBackgroundMonitoringSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.update, color: Colors.green),
+            const SizedBox(width: 8),
+            const Text(
+              'Background Monitoring',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Card(
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Keep monitoring when app is in background',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    Switch(
+                      value: _backgroundMonitoringEnabled,
+                      onChanged: (value) async {
+                        setState(() {
+                          _backgroundMonitoringEnabled = value;
+                        });
+
+                        await widget.storageService
+                            .saveBackgroundMonitoring(value);
+
+                        // Show a message to the user
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                value
+                                    ? 'Background monitoring enabled'
+                                    : 'Background monitoring disabled',
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'When enabled, Eye Guard will continue monitoring light conditions even when the app is not open.',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),

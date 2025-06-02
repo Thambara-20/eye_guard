@@ -7,6 +7,7 @@ import 'services/notification_service.dart';
 import 'services/sensor_service.dart';
 import 'services/storage_service.dart';
 import 'services/light_monitor_service.dart';
+import 'services/background_task.dart';
 
 // Import screens
 import 'screens/home_screen.dart';
@@ -32,6 +33,9 @@ void main() async {
     storageService: storageService,
     notificationService: notificationService,
   );
+
+  // Initialize background task
+  await BackgroundTask().initialize();
 
   // Check if the user has completed onboarding
   final prefs = await SharedPreferences.getInstance();
